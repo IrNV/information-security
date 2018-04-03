@@ -9,10 +9,12 @@ def vigenere_cipher(text_file, encrypted_text, key_word):
             symbol = t_file.read(1)
             count = 0
             while symbol:
+                # check if symbol is uppercase, because we want to save Uppercase symbols in text
                 if symbol.lower() in alphabet:
                     if symbol.islower():
                         index_word = alphabet.index(symbol)
                         index_key = alphabet.index(key_word[count])
+                        # % 26 - the number of characters in the alphabet
                         encr_file.write(alphabet[(index_word + index_key) % 26])
                     else:
                         lower_s = symbol.lower()
