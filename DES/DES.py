@@ -43,20 +43,33 @@ def des_decrypt(des_obj, file_encrypt, file_decrypt):
         f_decrypt.write(dec_text)
 
 
+def write_hex_key(key):
+    """
+    Запись ключа в файл в вибе байтов, что бы можна было скопировать его и использовать
+    в программах, таких как CrypTool
+    """
+    with open("Key.txt", 'wb') as f:
+        f.write(key)
+
+
 if __name__ == '__main__':
+    # DES(ECB) #
+    key = "Валерчик".encode("Windows-1251")  # Ключевое слово 8 байт
+    write_hex_key(key)
     # Задаем мод шифрования
-    key = b'asterisk'  # Ключевое слово 8 байт
     des = DES.new(key, DES.MODE_ECB)
 
     text = get_text()
-    file_name_encrypt = "text_encrypt_DES.txt"
-    file_name_decrypt = "text_decrypt_DES.txt"
+    file_name_encrypt = "text_encrypt_DES(ECB).txt"
+    file_name_decrypt = "text_decrypt_DES(ECB).txt"
 
     des_encrypt(des, text, file_name_encrypt)
     des_decrypt(des, file_name_encrypt, file_name_decrypt)
 
     # 3DES #
-    key = b'GRRichard Martin'  # Ключевое слово 16 байт
+
+    key = "ВалерчикОлегович".encode("Windows-1251")  # Ключевое слово 16 байт
+    write_hex_key(key)
     des = DES3.new(key, DES3.MODE_ECB)
 
     text = get_text()
