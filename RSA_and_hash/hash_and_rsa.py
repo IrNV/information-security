@@ -3,14 +3,14 @@ from hashlib import sha1
 import random
 
 
-def symetric():
+def symmetric():
     random_numbers = [str(i) for i in range(40)]
     random.shuffle(random_numbers)
 
     return ",".join(random_numbers)
 
 
-def symsetric_encryption(key_symetric, message):
+def symmetric_encryption(key_symetric, message):
     encrypted_message = list(message)
     key = key_symetric.split(",")
 
@@ -30,10 +30,10 @@ def get_bob_message(alice_pub):
     hash_message = sha1(message)
     print(hash_message.hexdigest())
 
-    key_symetric = symetric()
+    key_symetric = symmetric()
     print(key_symetric)
 
-    encrypted_hash = symsetric_encryption(key_symetric, hash_message.hexdigest().encode("utf8"))
+    encrypted_hash = symmetric_encryption(key_symetric, hash_message.hexdigest().encode("utf8"))
     print("Encrypted_hash:", encrypted_hash)
 
     encrypted_key_symetric = rsa.encrypt(key_symetric.encode('utf8'), alice_pub)
@@ -48,7 +48,7 @@ def alice_function():
 
     print(key_symetric)
     #print("asdasd".encode("utf8"))
-    print(symsetric_encryption(key_symetric.decode('utf8'), encrypted_hash.encode("utf8")))
+    print(symmetric_encryption(key_symetric.decode('utf8'), encrypted_hash.encode("utf8")))
 
 
 def main():
