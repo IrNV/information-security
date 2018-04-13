@@ -2,6 +2,9 @@ from PIL import Image
 
 
 def create_symbol_bin_code(symbol):
+    """
+    Создаем бинарный код символа, при необходимости дополняем старшие биты нулями
+    """
     len_bits = bin(ord(symbol))[2::]
     extra_zero = "0b"
     for i in range(len(len_bits), 8):
@@ -11,6 +14,9 @@ def create_symbol_bin_code(symbol):
 
 
 def create_number_bin_code(number):
+    """
+    Создаем бинарный код числа, при необходимости дополняем старшие биты нулями
+    """
     len_bits = bin(number)[2::]
 
     extra_zero = "0b"
@@ -19,43 +25,60 @@ def create_number_bin_code(number):
 
     return extra_zero + len_bits
 
-message = "Hello!   My friend!"
-im = Image.new("RGB", (100, 100))
-pixelsNew = im.load()
 
-img = Image.open("testik.bmp")
+def set_data_to_picture(file_name, message):
+    """
+    Записываем данные в картинку (за алгоритмом LSB) и
+    возвращаем новую картинку с записанными результатами
+    """
+    img = Image.open(file_name)
+    length, width = img.size
+    im = Image.new("RGB", (length, width))
+    pixels_new = im.load()
+    iterator = 0
+    rgb_im = img.convert('RGB')
 
-iterator = 0
-rgb_im = img.convert('RGB')
-for symbol in message:
-    bin_code = create_symbol_bin_code(symbol)
-    print("Symbol:", symbol, " -->", bin_code)
-    for i in range(0, 8, 2):
-        pixel_r, p2, p3 = rgb_im.getpixel((iterator % 100, iterator // 100))
-        print("x, y:", (iterator % 100, iterator // 100), "Value:", pixel_r, p2, p3)
-        bits = bin_code[2 + i: i + 4]
-        int_number = int(bits, 2)
-        result = int_number | pixel_r, int_number | p2, int_number | p3
+    for symbol in message:
+        bin_code = create_symbol_bin_code(symbol)
+        # print("Symbol:", symbol, " -->", bin_code)
+        for i in range(0, 8, 2):
+            red, green, blue = rgb_im.getpixel((iterator % length, iterator // length))
+            # print("x, y:", (iterator % length, iterator // length), "Value:", (red, green, blue))
+            bits = bin_code[2 + i: i + 4]
+            int_number = int(bits, 2)
+            result = int_number | red, int_number | green, int_number | blue
+            # print("New pixel. x, y:", (iterator % length, iterator // length), "Value:", result)
+            pixels_new[iterator % length, iterator // length] = result
+            iterator += 1
 
-        pixelsNew[iterator % 100, iterator // 100] = result
-        iterator += 1
-
-
-f = open("encrypted.bmp", "wb")
-im.save(f, "BMP")
-rgb_im = im.convert('RGB')
+    result_file = open("encrypted.bmp", "wb")
+    im.save(result_file, "BMP")
+    return "encrypted.bmp"
 
 
-img = Image.open("encrypted.bmp")
-rgb_im = img.convert('RGB')
-symbol = "0b"
-text = ""
-for i in range(10000):
-    pixel_r, p2, p3 = rgb_im.getpixel((i % 100, i // 100))
-    last_bits = bin(pixel_r)[-2]
-    symbol += create_number_bin_code(pixel_r)[-2::]
-    if len(symbol) == 10:
-        text += chr(int(symbol, 2))
-        symbol = "0b"
+def get_data_from_picture(file_name):
+    """
+    Считываем данные из картинки за алгоритмом LSB
+    """
+    img = Image.open(file_name)
+    length, width = img.size
+    rgb_im = img.convert('RGB')
+    symbol = "0b"
+    text = ""
+    for i in range(length * width):
+        red, green, blue = rgb_im.getpixel((i % length, i // length))
+        symbol += create_number_bin_code(red)[-2::]
+        if len(symbol) == 10:
+            text += chr(int(symbol, 2))
+            symbol = "0b"
 
-print(text)
+    return text
+
+
+def main():
+    message = "Hello, my friend!"
+    result = set_data_to_picture("testik.bmp", message)
+    print(get_data_from_picture(result))
+
+if __name__ == '__main__':
+    main()
