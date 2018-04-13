@@ -46,10 +46,14 @@ def set_data_to_picture(file_name, message):
             # print("x, y:", (iterator % length, iterator // length), "Value:", (red, green, blue))
             bits = bin_code[2 + i: i + 4]
             int_number = int(bits, 2)
-            result = int_number | red, int_number | green, int_number | blue
+            result = int_number | ((255 << 2) & red), int_number | ((255 << 2) & green), int_number | ((255 << 2) & blue)
             # print("New pixel. x, y:", (iterator % length, iterator // length), "Value:", result)
             pixels_new[iterator % length, iterator // length] = result
             iterator += 1
+
+    while iterator < length * width:
+        pixels_new[iterator % length, iterator // length] = rgb_im.getpixel((iterator % length, iterator // length))
+        iterator += 1
 
     result_file = open("encrypted.bmp", "wb")
     im.save(result_file, "BMP")
@@ -76,7 +80,8 @@ def get_data_from_picture(file_name):
 
 
 def main():
-    message = "Hello, my friend!"
+    with open("message.txt", "r") as f:
+        message = f.read()
     result = set_data_to_picture("testik.bmp", message)
     print(get_data_from_picture(result))
 

@@ -42,21 +42,25 @@ def convert_decrypted_word(decrypted):
 
 
 def main():
-    p = 18496081
-    q = 41752783
+    p = 109950881
+    q = 36135689
     e = 65537
 
+    print("p:", p)
+    print("q:", q)
+    print("e:", e)
     n = p * q
+    print("n:", n)
     phi = (p - 1) * (q - 1)
-
+    print("phi:", phi)
     d = get_d(phi, e)
-    print("R:", d)
+    print("d:", d)
 
     encrypted_word = encrypt_word(b"Valera", n, e)
-    print(encrypted_word)
-    print(decrypt_word(encrypted_word, int(d), n))
+    print("Encrypted word:", encrypted_word)
+    #print("decrypted word:",decrypt_word(encrypted_word, int(d), n))
     d_w = decrypt_word(encrypted_word, int(d), n)
-    print(convert_decrypted_word(d_w))
+    print("decrypted word:", convert_decrypted_word(d_w))
 
 if __name__ == '__main__':
     main()
